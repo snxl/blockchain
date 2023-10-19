@@ -8,43 +8,43 @@ import (
 )
 
 type Block struct {
-    Hash     []byte
-    Data     []byte
-    PrevHash []byte
-    Nonce    int
+	Hash        []byte
+	Data        []byte
+	PrevHash    []byte
+	Transaction []*Transaction
+	Nonce       int
 }
 
-
 func NewBlock(data string, prevHash []byte) *Block {
-    block := &Block{[]byte{}, []byte(data), prevHash, 0} 
-    pow := NewProofOfWork(block)
-    nonce, hash := pow.Run()
+	block := &Block{Hash: []byte{}, Data: []byte(data), PrevHash: prevHash, Nonce: 0}
+	pow := NewProofOfWork(block)
+	nonce, hash := pow.Run()
 
-    block.Hash = hash[:]
-    block.Nonce = nonce
+	block.Hash = hash[:]
+	block.Nonce = nonce
 
-    return block
+	return block
 }
 
 func (b *Block) Serialize() []byte {
-    var res bytes.Buffer
-    encoder := gob.NewEncoder(&res)
+	var res bytes.Buffer
+	encoder := gob.NewEncoder(&res)
 
-    err := encoder.Encode(b)
+	err := encoder.Encode(b)
 
-    helpers.HandleErrors(err)
+	helpers.HandleErrors(err)
 
-    return res.Bytes()
+	return res.Bytes()
 }
 
 func (b *Block) Deserialize(data []byte) *Block {
-    var block Block
+	var block Block
 
-    decoder := gob.NewDecoder(bytes.NewReader(data))
+	decoder := gob.NewDecoder(bytes.NewReader(data))
 
-    err := decoder.Decode(&block)
+	err := decoder.Decode(&block)
 
-    helpers.HandleErrors(err)
+	helpers.HandleErrors(err)
 
-    return &block
+	return &block
 }
